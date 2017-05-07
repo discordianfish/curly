@@ -10,6 +10,8 @@ It's basically `curl -f` but still printing the document:
 - Always retrieve/print the document
 - Return with exit code 121 if http status is >=400 or <200
 
+Internally it uses the `-w` and `-o` flags, so you can't use them when using the
+wrapper.
 
 **Example:**
 
