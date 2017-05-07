@@ -1,0 +1,20 @@
+#!/bin/sh
+set -e
+CODE=121 # curl used 1-90 as of right now
+
+curly() {
+  fd=3
+  fdmax=1024 # ulimit -n is not portable
+  while [ -e "/proc/self/fd/$fd" ]; do
+    fd=$((fd+1))
+    if [ "$fd" -ge "$fdmax" ]; then
+      echo "Couldn't find available fd" >&2
+      exit $CODE+1
+    fi
+  done
+  eval "exec $fd<&1"
+  code=$(curl -o "/proc/self/fd/$fd" -w '%{http_code}' "$@")
+  [ "$code" -gt 200 ] && [ "$code" -lt 400 ] || return $CODE
+}
+
+curly "$@"
